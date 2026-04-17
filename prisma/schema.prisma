@@ -1,0 +1,42 @@
+// Configuração do banco de dados
+datasource db {
+  provider = "postgresql"
+}
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+// Modelo do Imóvel
+model Property {
+  id              String   @id @default(uuid())
+  title           String
+  description     String
+  price           Float
+  type            PropertyType // apartamento, casa, kitnet
+  
+  // Características básicas
+  bathrooms       Int
+  garages         Int
+  bedrooms        Int
+  privateArea     Float    // m2
+  
+  // Fotos (guardaremos como uma lista de URLs)
+  photos          String[]
+
+  // Características da unidade (booleanos para facilitar filtros)
+  hasServiceArea  Boolean  @default(false)
+  hasKitchen      Boolean  @default(false)
+  hasGas          Boolean  @default(false)
+  hasLivingRoom   Boolean  @default(false)
+
+  createdAt       DateTime @default(now())
+  updatedAt       DateTime @updatedAt
+}
+
+// Definindo os tipos de imóveis permitidos
+enum PropertyType {
+  APARTMENT
+  HOUSE
+  KITNET
+}
