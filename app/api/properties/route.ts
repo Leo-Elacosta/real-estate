@@ -1,7 +1,6 @@
 import { NextResponse } from "next/server";
 import { prisma } from "@/lib/prisma";
-import { title } from "process";
-import { parse } from "path";
+import jwt from "jsonwebtoken";
 
 // -- FUNÇÃO PARA LISTAR IMÓVEIS --
 export async function GET() {
@@ -20,9 +19,27 @@ export async function GET() {
     }
 }
 
-// -- FUNÇÃO PARA CADASTRAR IMÓVEIS --
+// -- FUNÇÃO PARA CADASTRAR IMÓVEIS (PROTEGIDO/AUTENTICADO) --
 export async function POST(request: Request) {
     try {
+        //verifica o token de autenticação no cabeçalho da requisição
+        const authHeader = request.headers.get("authorization");
+
+        //se o token estiver ausente ou não começar com "Bearer ", retorna
+        if (!authHeader || !authHeader.startsWith("Bearer")) {
+            return NextResponse.json({ error: "Token de autenticação ausente!" }, { status: 401 });
+        }
+
+        //extrai o token do cabeçalho de autorização
+        const token = authHeader.split(' ')[1];
+
+        //verifica a validade do token usando a chave secreta definida nas variáveis de ambiente
+        try {
+            jwt.verify(token, process.env.JWT_SECRET!);
+        } catch (error) {
+            return NextResponse.json({ error: "Token de autenticação inválido!" }, { status: 401 });
+        }
+
         //extrai os dados do imóvel do corpo da requisição
         const body = await request.json();
 

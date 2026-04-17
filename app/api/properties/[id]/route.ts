@@ -57,9 +57,10 @@ export async function PUT(
             await prisma.property.delete({
                 where: { id: params.id },
             });
-            return new Response("Imóvel deletado com sucesso!", { status: 200 });
+
+            return NextResponse.json({ message: "Imóvel deletado com sucesso!" }, { status: 200 });
+        // eslint-disable-next-line @typescript-eslint/no-unused-vars
         } catch (error) {
             return NextResponse.json({ error: "Falha ao deletar imóvel!" }, { status: 500 });
-
         }
     }
